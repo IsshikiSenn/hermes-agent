@@ -1354,3 +1354,21 @@ not the specific names.
 
 Reviewers should reject new change-detector tests; authors should convert
 them into invariants before re-requesting review.
+
+## Cursor Cloud specific instructions
+
+The Cloud Agent image already has Node.js 22, ripgrep, git-lfs, and ffmpeg.
+Python dependencies are the CI set: `uv sync --locked --python 3.11 --extra all --extra dev`
+in `.venv`. The distro `python3` is 3.12; use `.venv/bin/python` or `uv run` so
+local runs stay on 3.11.
+
+`hermes`, `hermes-agent`, and `hermes-acp` are on `PATH`. `~/.hermes/config.yaml`
+is seeded from `cli-config.yaml.example` and `~/.hermes/.env` exists as an empty
+secrets file. Provider API keys are optional for `hermes doctor`,
+`scripts/run_tests.sh`, and the dashboard. Do not put keys in the repo.
+
+- Tests: `scripts/run_tests.sh` (not raw `pytest`). See Testing above.
+- Lint: `.venv/bin/ruff check .`
+- Typecheck: `npm run --prefix <ui-tui|web|apps/desktop|apps/shared|apps/bootstrap-installer> typecheck`
+- Docs site deps live in `website/` (`npm ci --prefix website`), separate from the root workspaces.
+- Dashboard: `hermes dashboard --no-open --host 127.0.0.1 --port 9119`. First launch builds `hermes_cli/web_dist` when that directory is missing. Loopback does not require a login. `GET /api/status` is the liveness check.
